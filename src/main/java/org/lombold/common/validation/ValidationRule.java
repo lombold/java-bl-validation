@@ -11,7 +11,7 @@ public class ValidationRule <T> {
         this.rule = rule;
     }
 
-    public static <F> ValidationRule<F> withRule(String failureMessage, Predicate<F> rule) {
+    public static <F> ValidationRule<F> rule(String failureMessage, Predicate<F> rule) {
         return new ValidationRule<>(failureMessage, rule);
     }
 

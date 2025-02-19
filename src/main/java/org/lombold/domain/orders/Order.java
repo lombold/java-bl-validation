@@ -28,13 +28,13 @@ public record Order(
         LocalDateTime shipmentDate,
         LocalDateTime deliveryDate,
         Map<String, String> additionalInfo,
-        boolean gift,
+        Boolean gift,
         String giftMessage,
-        int rewardPoints,
+        Integer rewardPoints,
         String couponCode,
         BigDecimal shippingCost,
         String storeLocation,
-        boolean expedited,
+        Boolean expedited,
         String customerEmail,
         String customerPhone
 ) {}
