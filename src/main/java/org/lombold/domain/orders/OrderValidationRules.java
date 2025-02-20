@@ -1,31 +1,39 @@
 package org.lombold.domain.orders;
 
-import org.lombold.common.validation.ValidationRule;
+import org.lombold.common.validation.ValidationRuleSet;
 
 import java.math.BigDecimal;
-import java.util.List;
 
+import static java.util.function.Predicate.not;
 import static org.lombold.common.validation.ValidationRule.rule;
+import static org.lombold.common.validation.ValidationRuleSet.ruleSet;
+import static org.lombold.common.validation.ValidationUtils.xor;
 
 public class OrderValidationRules {
 
-    public static List<ValidationRule<Order>> forCreation() {
-        return List.of(
-                rule("Order ID cannot be blank", OrderValidationRules::isOrderIdValid),
+    public static ValidationRuleSet<Order> forCreate() {
+        return ruleSet(
+                rule("Order ID must be blank", not(OrderValidationRules::isOrderIdSet))
+        ).and(commonRules());
+    }
+
+    public static ValidationRuleSet<Order> forUpdate() {
+        return ruleSet(
+                rule("Order ID cannot be blank", OrderValidationRules::isOrderIdSet)
+        ).and(commonRules());
+    }
+
+    private static ValidationRuleSet<Order> commonRules() {
+        return ruleSet(
                 rule("Customer ID cannot be blank", OrderValidationRules::isCustomerIdValid),
-                rule("Customer name cannot be blank", OrderValidationRules::isCustomerNameValid),
+                rule("Either person or company name must be set", xor(OrderValidationRules::isPersonNameSet, OrderValidationRules::isCompanyNameSet)),
                 rule("Shipping address cannot be blank", OrderValidationRules::isShippingAddressValid),
                 rule("Billing address cannot be blank", OrderValidationRules::isBillingAddressValid),
                 rule("Total Price must be greater than 0", OrderValidationRules::isTotalPriceValid)
         );
     }
 
-    private static List<ValidationRule<Order>> commonRules() {
-        return List.of(
-        );
-    }
-
-    public static boolean isOrderIdValid(final Order order) {
+    public static boolean isOrderIdSet(final Order order) {
         return order.orderId() != null && !order.orderId().isBlank();
     }
 
@@ -33,8 +41,12 @@ public class OrderValidationRules {
         return order.customerId() != null && !order.customerId().isBlank();
     }
 
-    public static boolean isCustomerNameValid(final Order order) {
-        return order.customerName() != null && !order.customerName().isBlank();
+    public static boolean isPersonNameSet(final Order order) {
+        return order.personName() != null && !order.personName().isBlank();
+    }
+
+    public static boolean isCompanyNameSet(final Order order) {
+        return order.companyName() != null && !order.companyName().isBlank();
     }
 
     public static boolean isShippingAddressValid(final Order order) {
